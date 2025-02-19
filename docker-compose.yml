@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo_container
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo_data:/data/db  # Volume persistant pour MongoDB
+
+  api:
+    build: .  # Utilisation du Dockerfile pour construire l'image API
+    container_name: api_container
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URI: "mongodb://root:example@mongo:27017"  # Connexion à MongoDB
+    depends_on:
+      - mongo  # Assure que MongoDB soit lancé avant l'API
+
+volumes:
+  mongo_data:  # Volume persistant pour MongoDB
+    driver: local  # Utilisation du driver local pour la persistance des données
